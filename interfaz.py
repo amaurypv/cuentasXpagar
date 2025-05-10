@@ -5,7 +5,6 @@ import subprocess
 import sys
 
 st.title("Agente de Control de Cuentas")
-
 st.header("Cuentas por Cobrar")
 
 # Subida de archivos
@@ -36,7 +35,11 @@ if st.button("▶️ Generar reporte"):
         with open("datos_csv/pagadas_manual.csv", "wb") as f:
             f.write(csv_manual.getbuffer())
 
-    # ✅ Cargar XML iniciales si no se subió nada
+    # ✅ Copiar CSV manual precargado si no se subió nada
+    elif not csv_manual and os.path.exists("datos_iniciales/pagadas_manual.csv"):
+        shutil.copy("datos_iniciales/pagadas_manual.csv", "datos_csv/pagadas_manual.csv")
+
+    # Copiar XML iniciales si no se subieron archivos
     if not os.listdir("datos_xml/xml_facturas"):
         iniciales_facturas = "datos_iniciales/xml_facturas"
         if os.path.exists(iniciales_facturas):
@@ -64,13 +67,14 @@ if st.button("▶️ Generar reporte"):
     else:
         st.write("- Pagos manuales: ❌")
 
-    # Ejecutar script
+    # Ejecutar script con ruta absoluta
     script_path = os.path.join(os.path.dirname(__file__), "agentes", "agente_cuentas_por_cobrar.py")
     resultado = subprocess.run([sys.executable, script_path], capture_output=True, text=True)
+
     if resultado.returncode == 0:
         st.success("✅ Reporte generado con éxito.")
 
-        # 🔍 Filtrar resumen útil desde stdout
+        # Mostrar resumen útil desde stdout
         resumen = []
         for linea in resultado.stdout.splitlines():
             if (
