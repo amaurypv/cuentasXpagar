@@ -2,6 +2,7 @@ import streamlit as st
 import os
 import shutil
 import subprocess
+import sys
 
 st.title("Agente de Control de Cuentas")
 
@@ -64,8 +65,8 @@ if st.button("▶️ Generar reporte"):
         st.write("- Pagos manuales: ❌")
 
     # Ejecutar script
-    resultado = subprocess.run(["python3", "agentes/agente_cuentas_por_cobrar.py"], capture_output=True, text=True)
-
+    script_path = os.path.join(os.path.dirname(__file__), "agentes", "agente_cuentas_por_cobrar.py")
+    resultado = subprocess.run([sys.executable, script_path], capture_output=True, text=True)
     if resultado.returncode == 0:
         st.success("✅ Reporte generado con éxito.")
 
