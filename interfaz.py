@@ -31,12 +31,12 @@ if st.button("▶️ Generar reporte"):
                 f.write(archivo.getbuffer())
 
     # Guardar CSV manual si se subió
-    if csv_manual:
+    if csv_manual is not None:
         with open("datos_csv/pagadas_manual.csv", "wb") as f:
             f.write(csv_manual.getbuffer())
 
     # ✅ Copiar CSV manual precargado si no se subió nada
-    elif not csv_manual and os.path.exists("datos_iniciales/pagadas_manual.csv"):
+    elif not os.path.exists("datos_csv/pagadas_manual.csv") and os.path.exists("datos_iniciales/pagadas_manual.csv"):
         shutil.copy("datos_iniciales/pagadas_manual.csv", "datos_csv/pagadas_manual.csv")
 
     # Copiar XML iniciales si no se subieron archivos
