@@ -22,15 +22,20 @@ def eliminar_xml_duplicados_por_hash(directorio):
             except Exception as e:
                 print(f"[ERROR] No se pudo procesar {archivo}: {e}")
 
-def obtener_folios_pagados_manualmente(csv_path="../datos_csv/pagadas_manual.csv"):
+def obtener_folios_pagados_manualmente():
+    # Calcular ruta absoluta del CSV desde la raíz del proyecto
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    csv_path = os.path.join(base_dir, "datos_csv", "pagadas_manual.csv")
+
     if not os.path.exists(csv_path):
         print(f"[DEBUG] Archivo CSV manual no encontrado: {csv_path}")
         return set()
     try:
         df = pd.read_csv(csv_path)
+        print(f"[DEBUG] CSV manual cargado con {len(df)} folios.")
         return set(df["Folio"].astype(str).str.upper())
     except Exception as e:
-        print(f"Error leyendo el archivo CSV de pagos manuales: {e}")
+        print(f"[DEBUG] Error leyendo CSV de pagos manuales: {e}")
         return set()
 
 def obtener_uuids_pagados(carpeta_complementos):
