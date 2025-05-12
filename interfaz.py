@@ -18,45 +18,40 @@ if st.button("▶️ Generar reporte"):
     os.makedirs("datos_xml/xml_complementos", exist_ok=True)
     os.makedirs("datos_csv", exist_ok=True)
 
-    # Guardar XML de facturas subidos
+    # ✅ Copiar XML iniciales siempre (si aún no están copiados)
+    iniciales_facturas = "datos_iniciales/xml_facturas"
+    if os.path.exists(iniciales_facturas):
+        for archivo in os.listdir(iniciales_facturas):
+            destino = os.path.join("datos_xml/xml_facturas", archivo)
+            if not os.path.exists(destino):
+                shutil.copy(os.path.join(iniciales_facturas, archivo), destino)
+
+    iniciales_complementos = "datos_iniciales/xml_complementos"
+    if os.path.exists(iniciales_complementos):
+        for archivo in os.listdir(iniciales_complementos):
+            destino = os.path.join("datos_xml/xml_complementos", archivo)
+            if not os.path.exists(destino):
+                shutil.copy(os.path.join(iniciales_complementos, archivo), destino)
+
+    # Agregar XML subidos (sin borrar los iniciales)
     if xml_facturas:
         for archivo in xml_facturas:
             with open(os.path.join("datos_xml/xml_facturas", archivo.name), "wb") as f:
                 f.write(archivo.getbuffer())
 
-    # Guardar XML de complementos subidos
     if xml_complementos:
         for archivo in xml_complementos:
             with open(os.path.join("datos_xml/xml_complementos", archivo.name), "wb") as f:
                 f.write(archivo.getbuffer())
 
-    # Guardar CSV manual si se subió
+    # ✅ Guardar CSV manual si se subió (reemplaza)
     if csv_manual is not None:
         with open("datos_csv/pagadas_manual.csv", "wb") as f:
             f.write(csv_manual.getbuffer())
 
-    # ✅ Copiar CSV manual precargado si no se subió nada
+    # ✅ Copiar CSV base si no se subió uno
     elif not os.path.exists("datos_csv/pagadas_manual.csv") and os.path.exists("datos_iniciales/pagadas_manual.csv"):
         shutil.copy("datos_iniciales/pagadas_manual.csv", "datos_csv/pagadas_manual.csv")
-
-    # Copiar XML iniciales si no se subieron archivos
-    if not os.listdir("datos_xml/xml_facturas"):
-        iniciales_facturas = "datos_iniciales/xml_facturas"
-        if os.path.exists(iniciales_facturas):
-            for archivo in os.listdir(iniciales_facturas):
-                shutil.copy(
-                    os.path.join(iniciales_facturas, archivo),
-                    os.path.join("datos_xml/xml_facturas", archivo)
-                )
-
-    if not os.listdir("datos_xml/xml_complementos"):
-        iniciales_complementos = "datos_iniciales/xml_complementos"
-        if os.path.exists(iniciales_complementos):
-            for archivo in os.listdir(iniciales_complementos):
-                shutil.copy(
-                    os.path.join(iniciales_complementos, archivo),
-                    os.path.join("datos_xml/xml_complementos", archivo)
-                )
 
     # Mostrar archivos detectados
     st.subheader("📂 Archivos detectados antes de procesar:")
@@ -67,7 +62,7 @@ if st.button("▶️ Generar reporte"):
     else:
         st.write("- Pagos manuales: ❌")
 
-    # Ejecutar script con ruta absoluta
+    # Ejecutar script
     script_path = os.path.join(os.path.dirname(__file__), "agentes", "agente_cuentas_por_cobrar.py")
     resultado = subprocess.run([sys.executable, script_path], capture_output=True, text=True)
 
