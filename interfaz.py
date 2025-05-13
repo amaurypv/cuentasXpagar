@@ -10,6 +10,14 @@ st.title("Agente de Control de Cuentas")
 # Menú principal
 opcion = st.selectbox("¿Qué deseas hacer?", ["Selecciona una opción", "Cuentas por Cobrar", "Cuentas por Pagar"])
 
+def copiar_a_datos_iniciales(origen, destino_base):
+    if not os.path.exists(destino_base):
+        os.makedirs(destino_base)
+    for archivo in origen:
+        destino = os.path.join(destino_base, archivo.name)
+        with open(destino, "wb") as f:
+            f.write(archivo.getbuffer())
+
 if opcion == "Cuentas por Cobrar":
     st.header("Cuentas por Cobrar")
 
@@ -22,7 +30,7 @@ if opcion == "Cuentas por Cobrar":
         os.makedirs("datos_xml/xml_complementos", exist_ok=True)
         os.makedirs("datos_csv", exist_ok=True)
 
-        # Precarga XML base si no existen
+        # Copiar precargados si no existen
         for tipo, carpeta in [("xml_facturas", "datos_iniciales/xml_facturas"), ("xml_complementos", "datos_iniciales/xml_complementos")]:
             if os.path.exists(carpeta):
                 for archivo in os.listdir(carpeta):
@@ -30,19 +38,23 @@ if opcion == "Cuentas por Cobrar":
                     if not os.path.exists(destino):
                         shutil.copy(os.path.join(carpeta, archivo), destino)
 
-        # Guardar archivos subidos
+        # Guardar y copiar subidos
         if xml_facturas:
             for archivo in xml_facturas:
                 with open(os.path.join("datos_xml/xml_facturas", archivo.name), "wb") as f:
                     f.write(archivo.getbuffer())
+            copiar_a_datos_iniciales(xml_facturas, "datos_iniciales/xml_facturas")
 
         if xml_complementos:
             for archivo in xml_complementos:
                 with open(os.path.join("datos_xml/xml_complementos", archivo.name), "wb") as f:
                     f.write(archivo.getbuffer())
+            copiar_a_datos_iniciales(xml_complementos, "datos_iniciales/xml_complementos")
 
         if csv_manual is not None:
             with open("datos_csv/pagadas_manual.csv", "wb") as f:
+                f.write(csv_manual.getbuffer())
+            with open("datos_iniciales/pagadas_manual.csv", "wb") as f:
                 f.write(csv_manual.getbuffer())
         elif not os.path.exists("datos_csv/pagadas_manual.csv") and os.path.exists("datos_iniciales/pagadas_manual.csv"):
             shutil.copy("datos_iniciales/pagadas_manual.csv", "datos_csv/pagadas_manual.csv")
@@ -79,7 +91,6 @@ elif opcion == "Cuentas por Pagar":
         os.makedirs("xml_pagos", exist_ok=True)
         os.makedirs("datos_csv", exist_ok=True)
 
-        # Precargar XML base si no están copiados aún
         for tipo, carpeta in [("xml_proveedores", "datos_iniciales/xml_proveedores"), ("xml_pagos", "datos_iniciales/xml_pagos")]:
             if os.path.exists(carpeta):
                 for archivo in os.listdir(carpeta):
@@ -87,19 +98,22 @@ elif opcion == "Cuentas por Pagar":
                     if not os.path.exists(destino):
                         shutil.copy(os.path.join(carpeta, archivo), destino)
 
-        # Guardar archivos subidos
         if xml_proveedores:
             for archivo in xml_proveedores:
                 with open(os.path.join("xml_proveedores", archivo.name), "wb") as f:
                     f.write(archivo.getbuffer())
+            copiar_a_datos_iniciales(xml_proveedores, "datos_iniciales/xml_proveedores")
 
         if xml_pagos:
             for archivo in xml_pagos:
                 with open(os.path.join("xml_pagos", archivo.name), "wb") as f:
                     f.write(archivo.getbuffer())
+            copiar_a_datos_iniciales(xml_pagos, "datos_iniciales/xml_pagos")
 
         if csv_registro is not None:
             with open("datos_csv/registro_pagos.csv", "wb") as f:
+                f.write(csv_registro.getbuffer())
+            with open("datos_iniciales/registro_pagos.csv", "wb") as f:
                 f.write(csv_registro.getbuffer())
         elif not os.path.exists("datos_csv/registro_pagos.csv") and os.path.exists("datos_iniciales/registro_pagos.csv"):
             shutil.copy("datos_iniciales/registro_pagos.csv", "datos_csv/registro_pagos.csv")
