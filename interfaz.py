@@ -21,7 +21,10 @@ def guardar_archivos(files, prefix):
 def descargar_archivos(prefix, destino_local):
     os.makedirs(destino_local, exist_ok=True)
     for blob in bucket.list_blobs(prefix=prefix):
-        local_path = os.path.join(destino_local, os.path.basename(blob.name))
+        filename = os.path.basename(blob.name)
+        if not filename:
+            continue
+        local_path = os.path.join(destino_local, filename)
         blob.download_to_filename(local_path)
 
 if opcion == "Cuentas por Cobrar":
