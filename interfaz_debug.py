@@ -45,14 +45,15 @@ if opcion == "Cuentas por Cobrar":
         descargar_archivos("xml_facturas", "datos_xml/xml_facturas")
         descargar_archivos("xml_complementos", "datos_xml/xml_complementos")
         try:
+            os.makedirs("datos_csv", exist_ok=True)
             blob = bucket.blob("pagadas_manual.csv")
             blob.download_to_filename("datos_csv/pagadas_manual.csv")
         except:
             pass
 
         resultado = subprocess.run([sys.executable, "agentes/agente_cuentas_por_cobrar_debug.py"], capture_output=True, text=True)
-        st.code("STDOUT:\n" + resultado.stdout)
-        st.code("STDERR:\n" + resultado.stderr)
+            st.code("STDOUT:\n" + resultado.stdout)
+            st.code("STDERR:\n" + resultado.stderr)
         if resultado.returncode == 0 and os.path.exists("Cuentas_por_Cobrar_Emitidas.xlsx"):
             with open("Cuentas_por_Cobrar_Emitidas.xlsx", "rb") as f:
                 st.download_button("⬇️ Descargar reporte", f, file_name="Cuentas_por_Cobrar_Emitidas.xlsx")
