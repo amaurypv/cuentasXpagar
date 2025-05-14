@@ -42,19 +42,17 @@ if opcion == "Cuentas por Cobrar":
             blob = bucket.blob("pagadas_manual.csv")
             blob.upload_from_string(csv_manual.getvalue())
 
-        st.write("📥 Descargando xml_facturas...")
         descargar_archivos("xml_facturas", "datos_xml/xml_facturas")
-        st.write("📥 Descargando xml_complementos...")
-        descargar_archivos("datos_xml/xml_complementos", "datos_xml/xml_complementos")
+        descargar_archivos("xml_complementos", "datos_xml/xml_complementos")
         try:
             blob = bucket.blob("pagadas_manual.csv")
             blob.download_to_filename("datos_csv/pagadas_manual.csv")
         except:
             pass
 
-        st.write("✅ Archivos descargados. Ejecutando script...")
         resultado = subprocess.run([sys.executable, "agentes/agente_cuentas_por_cobrar_debug.py"], capture_output=True, text=True)
-        st.code(resultado.stderr)
+            st.code("STDOUT:\n" + resultado.stdout)
+            st.code("STDERR:\n" + resultado.stderr)
         if resultado.returncode == 0 and os.path.exists("Cuentas_por_Cobrar_Emitidas.xlsx"):
             with open("Cuentas_por_Cobrar_Emitidas.xlsx", "rb") as f:
                 st.download_button("⬇️ Descargar reporte", f, file_name="Cuentas_por_Cobrar_Emitidas.xlsx")
@@ -76,9 +74,7 @@ elif opcion == "Cuentas por Pagar":
             blob = bucket.blob("registro_pagos.csv")
             blob.upload_from_string(csv_registro.getvalue())
 
-        st.write("📥 Descargando xml_proveedores...")
         descargar_archivos("xml_proveedores", "xml_proveedores")
-        st.write("📥 Descargando xml_pagos...")
         descargar_archivos("xml_pagos", "xml_pagos")
         try:
             blob = bucket.blob("registro_pagos.csv")
@@ -86,9 +82,7 @@ elif opcion == "Cuentas por Pagar":
         except:
             pass
 
-        st.write("✅ Archivos descargados. Ejecutando script...")
         resultado = subprocess.run([sys.executable, "agentes/agente_cuentas_por_pagar.py"], capture_output=True, text=True)
-        st.code(resultado.stderr)
         if resultado.returncode == 0 and os.path.exists("Cuentas_por_Pagar.xlsx"):
             with open("Cuentas_por_Pagar.xlsx", "rb") as f:
                 st.download_button("⬇️ Descargar reporte", f, file_name="Cuentas_por_Pagar.xlsx")
