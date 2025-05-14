@@ -52,8 +52,8 @@ if opcion == "Cuentas por Cobrar":
             pass
 
         resultado = subprocess.run([sys.executable, "agentes/agente_cuentas_por_cobrar_debug.py"], capture_output=True, text=True)
-            st.code("STDOUT:\n" + resultado.stdout)
-            st.code("STDERR:\n" + resultado.stderr)
+        st.code("STDOUT:\n" + resultado.stdout)
+        st.code("STDERR:\n" + resultado.stderr)
         if resultado.returncode == 0 and os.path.exists("Cuentas_por_Cobrar_Emitidas.xlsx"):
             with open("Cuentas_por_Cobrar_Emitidas.xlsx", "rb") as f:
                 st.download_button("⬇️ Descargar reporte", f, file_name="Cuentas_por_Cobrar_Emitidas.xlsx")
