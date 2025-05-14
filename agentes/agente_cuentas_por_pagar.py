@@ -1,1 +1,1 @@
-(contenido completo que ya generamos arriba)
+(código del script agente_cuentas_por_pagar.py que incluye cálculo correcto de vencimiento y resumen limpio sin "Nº Facturas")
